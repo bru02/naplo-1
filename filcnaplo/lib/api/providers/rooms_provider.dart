@@ -19,12 +19,9 @@ class RoomsProvider extends ChangeNotifier {
   }
 
   Future<void> fetch() async {
-    var rooms = await Provider.of<DatabaseProvider>(_context, listen: false)
-        .query
-        .getRooms();
+    var rooms = await Provider.of<DatabaseProvider>(_context, listen: false).query.getRooms();
     rooms.forEach((Map roomMap) {
-      _dayHashRoomMap[_getKey(roomMap['dayhash'], roomMap['lesson_index'])] =
-          roomMap['room'];
+      _dayHashRoomMap[_getKey(roomMap['dayhash'], roomMap['lesson_index'])] = roomMap['room'];
     });
   }
 
@@ -34,7 +31,7 @@ class RoomsProvider extends ChangeNotifier {
   }
 
   String getRoomForLesson(Lesson l) {
-    return getRoomOverwriteForLesson(l) ?? l.room;
+    return getRoomOverwriteForLesson(l) ?? l.room.replaceAll("_", " ");
   }
 
   String? getRoomOverwriteForLesson(Lesson l) {
@@ -61,15 +58,12 @@ class RoomsProvider extends ChangeNotifier {
       return _dateDayHashMap[lesson.date]!;
     }
 
-    List<Lesson> lessons = Provider.of<TimetableProvider>(_context,
-            listen: false)
+    List<Lesson> lessons = Provider.of<TimetableProvider>(_context, listen: false)
         .lessons
-        .where(
-            (l) => l.date.isAtSameMomentAs(lesson.date) && l.lessonIndex != "+")
+        .where((l) => l.date.isAtSameMomentAs(lesson.date) && l.lessonIndex != "+")
         .toList();
 
-    List<int> bytes =
-        utf8.encode(lessons.map((e) => e.lessonIndex + e.subject.name).join());
+    List<int> bytes = utf8.encode(lessons.map((e) => e.lessonIndex + e.subject.name).join());
 
     String hash = sha1.convert(bytes).toString();
     _dateDayHashMap[lesson.date] = hash;
@@ -88,12 +82,10 @@ class RoomsProvider extends ChangeNotifier {
     return _getKey(getDayHashForLesson(l), l.lessonIndex);
   }
 
-  bool _differentDate(DateTime a, DateTime b) =>
-      !(a.year == b.year && a.month == b.month && a.day == b.day);
+  bool _differentDate(DateTime a, DateTime b) => !(a.year == b.year && a.month == b.month && a.day == b.day);
 
   List<List<Lesson>> getEditableLessons() {
-    List<Lesson> lessons =
-        Provider.of<TimetableProvider>(_context, listen: false).lessons;
+    List<Lesson> lessons = Provider.of<TimetableProvider>(_context, listen: false).lessons;
 
     Map<String, int> roomOccurances = Map();
 
@@ -111,9 +103,7 @@ class RoomsProvider extends ChangeNotifier {
     // all the rooms are correct by default so no need to edit
     if (roomOccurances.keys.length > 5) return [];
 
-    int highestOccurance = roomOccurances.values.length > 0
-        ? roomOccurances.values.reduce(min)
-        : 0;
+    int highestOccurance = roomOccurances.values.length > 0 ? roomOccurances.values.reduce(min) : 0;
 
     List<List<Lesson>> ret = [];
 
