@@ -33,6 +33,10 @@ class DatabaseQuery {
     });
     return userProvider;
   }
+
+  Future<List<Map>> getRooms() async {
+    return await db.query("timetable_overwrites");
+  }
 }
 
 class UserDatabaseQuery {

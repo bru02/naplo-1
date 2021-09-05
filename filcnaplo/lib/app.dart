@@ -1,6 +1,7 @@
 import 'package:filcnaplo/api/client.dart';
 import 'package:filcnaplo/api/providers/news_provider.dart';
 import 'package:filcnaplo/api/providers/database_provider.dart';
+import 'package:filcnaplo/api/providers/rooms_provider.dart';
 import 'package:filcnaplo/models/config.dart';
 import 'package:filcnaplo/theme.dart';
 import 'package:filcnaplo_kreta_api/client/client.dart';
@@ -55,9 +56,11 @@ class App extends StatelessWidget {
         providers: [
           ChangeNotifierProvider<SettingsProvider>(create: (_) => settings),
           ChangeNotifierProvider<UserProvider>(create: (_) => user),
-          Provider<KretaClient>(create: (context) => KretaClient(context: context, userAgent: settings.config.userAgent)),
+          Provider<KretaClient>(
+              create: (context) => KretaClient(context: context, userAgent: settings.config.userAgent)),
           Provider<DatabaseProvider>(create: (context) => database),
-          ChangeNotifierProvider<ThemeModeObserver>(create: (context) => ThemeModeObserver(initialTheme: settings.theme)),
+          ChangeNotifierProvider<ThemeModeObserver>(
+              create: (context) => ThemeModeObserver(initialTheme: settings.theme)),
           ChangeNotifierProvider<NewsProvider>(create: (context) => NewsProvider(context: context)),
           ChangeNotifierProvider<UpdateProvider>(create: (context) => UpdateProvider(context: context)),
 
@@ -70,6 +73,7 @@ class App extends StatelessWidget {
           ChangeNotifierProvider<NoteProvider>(create: (context) => NoteProvider(context: context)),
           ChangeNotifierProvider<EventProvider>(create: (context) => EventProvider(context: context)),
           ChangeNotifierProvider<AbsenceProvider>(create: (context) => AbsenceProvider(context: context)),
+          ChangeNotifierProvider<RoomsProvider>(create: (context) => RoomsProvider(context: context)),
 
           ChangeNotifierProvider<GradeCalculatorProvider>(create: (context) => GradeCalculatorProvider(context)),
         ],

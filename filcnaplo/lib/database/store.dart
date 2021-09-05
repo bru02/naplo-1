@@ -36,6 +36,20 @@ class DatabaseStore {
     await db.delete("users", where: "id = ?", whereArgs: [userId]);
     await db.delete("user_data", where: "id = ?", whereArgs: [userId]);
   }
+
+  Future<void> overwriteRoom(
+      String dayHash, String lessonIndex, String room) async {
+    await db.delete('timetable_overwrites',
+        where: 'dayhash = ? and lesson_index = ?',
+        whereArgs: [dayHash, lessonIndex]);
+
+    if (room.isNotEmpty)
+      await db.insert('timetable_overwrites', {
+        'dayhash': dayHash,
+        'lesson_index': lessonIndex,
+        'room': room,
+      });
+  }
 }
 
 class UserDatabaseStore {
