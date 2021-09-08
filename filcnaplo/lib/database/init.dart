@@ -13,7 +13,7 @@ Future<Database> initDB() async {
   await db.execute("CREATE TABLE IF NOT EXISTS user_data ("
       "id TEXT NOT NULL, grades TEXT, timetable TEXT, exams TEXT, homework TEXT, messages TEXT, notes TEXT, events TEXT, absences TEXT)");
   await db.execute(
-      "CREATE TABLE IF NOT EXISTS timetable_overwrites (dayhash TEXT not null, lesson_index TEXT not null, room TEXT not null, primary key (dayhash, lesson_index))");
+      "CREATE TABLE IF NOT EXISTS timetable_overrides (dayhash TEXT not null, lesson_index TEXT not null, room TEXT not null, primary key (dayhash, lesson_index))");
 
   if ((await db.rawQuery("SELECT COUNT(*) FROM settings"))[0].values.first == 0) {
     // Set default values for table Settings

@@ -35,7 +35,7 @@ class DatabaseQuery {
   }
 
   Future<List<Map>> getRooms() async {
-    return await db.query("timetable_overwrites");
+    return await db.query("timetable_overrides");
   }
 }
 

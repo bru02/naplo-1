@@ -25,25 +25,23 @@ class RoomsProvider extends ChangeNotifier {
     });
   }
 
-  bool hasOverwrite(Lesson l) {
-    String? r = getRoomOverwriteForLesson(l);
+  bool hasOverride(Lesson l) {
+    String? r = getRoomOverrideForLesson(l);
     return r != null && r.isNotEmpty;
   }
 
   String getRoomForLesson(Lesson l) {
-    return getRoomOverwriteForLesson(l) ?? l.room.replaceAll("_", " ");
+    return getRoomOverrideForLesson(l) ?? l.room.replaceAll("_", " ");
   }
 
-  String? getRoomOverwriteForLesson(Lesson l) {
+  String? getRoomOverrideForLesson(Lesson l) {
     return _dayHashRoomMap[_getKeyForLesson(l)];
   }
 
-  Future<void> overwriteRoom(String room, Lesson l) async {
+  Future<void> overrideRoom(String room, Lesson l) async {
     if (room == l.room) room = '';
 
-    await Provider.of<DatabaseProvider>(_context, listen: false)
-        .store
-        .overwriteRoom(getDayHashForLesson(l), l.lessonIndex, room);
+    await Provider.of<DatabaseProvider>(_context, listen: false).store.overrideRoom(getDayHashForLesson(l), l.lessonIndex, room);
 
     String key = _getKeyForLesson(l);
     if (room.isNotEmpty)
@@ -58,10 +56,8 @@ class RoomsProvider extends ChangeNotifier {
       return _dateDayHashMap[lesson.date]!;
     }
 
-    List<Lesson> lessons = Provider.of<TimetableProvider>(_context, listen: false)
-        .lessons
-        .where((l) => l.date.isAtSameMomentAs(lesson.date) && l.lessonIndex != "+")
-        .toList();
+    List<Lesson> lessons =
+        Provider.of<TimetableProvider>(_context, listen: false).lessons.where((l) => _sameDate(l.date, lesson.date) && l.lessonIndex != "+").toList();
 
     List<int> bytes = utf8.encode(lessons.map((e) => e.lessonIndex + e.subject.name).join());
 
@@ -82,7 +78,7 @@ class RoomsProvider extends ChangeNotifier {
     return _getKey(getDayHashForLesson(l), l.lessonIndex);
   }
 
-  bool _differentDate(DateTime a, DateTime b) => !(a.year == b.year && a.month == b.month && a.day == b.day);
+  bool _sameDate(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;
 
   List<List<Lesson>> getEditableLessons() {
     List<Lesson> lessons = Provider.of<TimetableProvider>(_context, listen: false).lessons;
@@ -109,16 +105,15 @@ class RoomsProvider extends ChangeNotifier {
 
     lessons
         .where((l) =>
-            !hasOverwrite(l) &&
+            !hasOverride(l) &&
             // Sometimes a few classrooms are correct, we don't want to edit those
-            roomOccurances[l.room] == highestOccurance)
+            roomOccurances[l.room] == highestOccurance &&
+            l.subject.id != '')
         .forEach((l) {
       // Handle double lessons
       if (ret.isNotEmpty) {
         Lesson prev = ret.last.last;
-        if (prev.subject == l.subject &&
-            !_differentDate(prev.date, l.date) &&
-            int.tryParse(prev.lessonIndex)! + 1 == int.tryParse(l.lessonIndex))
+        if (prev.subject == l.subject && _sameDate(prev.date, l.date) && int.tryParse(prev.lessonIndex)! + 1 == int.tryParse(l.lessonIndex))
           ret.last.add(l);
         else
           ret.add([l]);
