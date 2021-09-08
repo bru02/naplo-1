@@ -21,7 +21,7 @@ class RoomsProvider extends ChangeNotifier {
   Future<void> fetch() async {
     var rooms = await Provider.of<DatabaseProvider>(_context, listen: false).query.getRooms();
     rooms.forEach((Map roomMap) {
-      _dayHashRoomMap[_getKey(roomMap['dayhash'], roomMap['lesson_index'])] = roomMap['room'];
+      _dayHashRoomMap[_getKey(roomMap['dayhash'], roomMap['lesson_start'])] = roomMap['room'];
     });
   }
 
@@ -41,7 +41,7 @@ class RoomsProvider extends ChangeNotifier {
   Future<void> overrideRoom(String room, Lesson l) async {
     if (room == l.room) room = '';
 
-    await Provider.of<DatabaseProvider>(_context, listen: false).store.overrideRoom(getDayHashForLesson(l), l.lessonIndex, room);
+    await Provider.of<DatabaseProvider>(_context, listen: false).store.overrideRoom(getDayHashForLesson(l), _getLessonStart(l), room);
 
     String key = _getKeyForLesson(l);
     if (room.isNotEmpty)
@@ -75,7 +75,11 @@ class RoomsProvider extends ChangeNotifier {
   }
 
   _getKeyForLesson(Lesson l) {
-    return _getKey(getDayHashForLesson(l), l.lessonIndex);
+    return _getKey(getDayHashForLesson(l), _getLessonStart(l).toString());
+  }
+
+  int _getLessonStart(Lesson l) {
+    return ((l.start.millisecondsSinceEpoch - l.date.millisecondsSinceEpoch) / 1000).round();
   }
 
   bool _sameDate(DateTime a, DateTime b) => a.year == b.year && a.month == b.month && a.day == b.day;

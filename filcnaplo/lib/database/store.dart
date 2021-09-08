@@ -37,13 +37,13 @@ class DatabaseStore {
     await db.delete("user_data", where: "id = ?", whereArgs: [userId]);
   }
 
-  Future<void> overrideRoom(String dayHash, String lessonIndex, String room) async {
-    await db.delete('timetable_overrides', where: 'dayhash = ? and lesson_index = ?', whereArgs: [dayHash, lessonIndex]);
+  Future<void> overrideRoom(String dayHash, int lessonStart, String room) async {
+    await db.delete('timetable_overrides', where: 'dayhash = ? and lesson_start = ?', whereArgs: [dayHash, lessonStart]);
 
     if (room.isNotEmpty)
       await db.insert('timetable_overrides', {
         'dayhash': dayHash,
-        'lesson_index': lessonIndex,
+        'lesson_start': lessonStart,
         'room': room,
       });
   }
