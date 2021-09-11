@@ -67,8 +67,10 @@ class OverridesProvider extends ChangeNotifier {
       return _dateDayHashMap[lesson.date]!;
     }
 
-    List<Lesson> lessons =
-        Provider.of<TimetableProvider>(_context, listen: false).lessons.where((l) => _sameDate(l.date, lesson.date) && l.lessonIndex != "+").toList();
+    List<Lesson> lessons = Provider.of<TimetableProvider>(_context, listen: false)
+        .lessons
+        .where((l) => _sameDate(l.date, lesson.date) && l.lessonIndex != "+" && l.subject.id != '')
+        .toList();
 
     List<int> bytes = utf8.encode(lessons.map((e) => e.lessonIndex + e.subject.name).join());
 
