@@ -34,8 +34,12 @@ class DatabaseQuery {
     return userProvider;
   }
 
-  Future<List<Map>> getRooms() async {
-    return await db.query("timetable_overrides");
+  Future<List<Map>> getRecurringLessonOverrides() async {
+    return await db.query("timetable_overrides", where: "is_recurring = 1");
+  }
+
+  Future<List<Map>> getLessonOverridesForWeek(int weekId) async {
+    return await db.query("timetable_overrides", where: "dayhash_or_weekid = ?", whereArgs: [weekId]);
   }
 }
 

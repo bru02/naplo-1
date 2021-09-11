@@ -37,14 +37,30 @@ class DatabaseStore {
     await db.delete("user_data", where: "id = ?", whereArgs: [userId]);
   }
 
-  Future<void> overrideRoom(String dayHash, int lessonStart, String room) async {
-    await db.delete('timetable_overrides', where: 'dayhash = ? and lesson_start = ?', whereArgs: [dayHash, lessonStart]);
+  Future<void> setLessonOverride(String weekId, String lessonId, String kind, String value) async {
+    await db
+        .delete('timetable_overrides', where: 'dayhash_or_weekid = ? and lesson_start_or_id = ? and kind = ?', whereArgs: [weekId, lessonId, kind]);
 
-    if (room.isNotEmpty)
+    if (value.isNotEmpty)
       await db.insert('timetable_overrides', {
-        'dayhash': dayHash,
-        'lesson_start': lessonStart,
-        'room': room,
+        'dayhash_or_weekid': weekId,
+        'lesson_start_or_id': lessonId,
+        'kind': kind,
+        'value': value,
+      });
+  }
+
+  Future<void> setRecurringLessonOverride(String dayHash, int lessonStart, String kind, String value) async {
+    await db.delete('timetable_overrides',
+        where: 'dayhash_or_weekid = ? and lesson_start_or_id = ? and kind = ?', whereArgs: [dayHash, lessonStart, kind]);
+
+    if (value.isNotEmpty)
+      await db.insert('timetable_overrides', {
+        'dayhash_or_weekid': dayHash,
+        'lesson_start_or_id': lessonStart,
+        'kind': kind,
+        'value': value,
+        'is_recurring': 1,
       });
   }
 }
