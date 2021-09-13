@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:filcnaplo/api/client.dart';
 import 'package:filcnaplo/api/providers/news_provider.dart';
 import 'package:filcnaplo/api/providers/database_provider.dart';
-import 'package:filcnaplo/api/providers/overrides_provider.dart';
 import 'package:filcnaplo/models/config.dart';
 import 'package:filcnaplo/theme.dart';
 import 'package:filcnaplo_kreta_api/client/client.dart';
@@ -75,7 +74,6 @@ class App extends StatelessWidget {
           ChangeNotifierProvider<NoteProvider>(create: (context) => NoteProvider(context: context)),
           ChangeNotifierProvider<EventProvider>(create: (context) => EventProvider(context: context)),
           ChangeNotifierProvider<AbsenceProvider>(create: (context) => AbsenceProvider(context: context)),
-          ChangeNotifierProvider<OverridesProvider>(create: (context) => OverridesProvider(context: context)),
 
           ChangeNotifierProvider<GradeCalculatorProvider>(create: (context) => GradeCalculatorProvider(context)),
         ],
